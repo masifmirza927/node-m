@@ -35,6 +35,12 @@ app.get("/", (request, response) => {
 
   })
 
+  // how to get request body data in express js?
+  app.post("/create-user", (request, response) => {
+    console.log(request.body);
+
+  })
+
 app.listen(port, () => {
     console.log(` app listening on port ${port}`)
   })
