@@ -12,6 +12,7 @@ app.get("/", (request, response) => {
     response.json(student);
   })
 
+  //http://localhost:3003/search-fruit?id=2
   app.get("/search-fruit", (request, response) => {
     console.log(request.query.id);
 
@@ -24,6 +25,7 @@ app.get("/", (request, response) => {
     });
   })
 
+  //http://localhost:3003/search/2
   app.get("/search/:id", (request, response) => {
     console.log(request.params.id)
     response.json({
