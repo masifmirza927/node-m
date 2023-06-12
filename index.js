@@ -8,21 +8,22 @@ app.get("/", (request, response) => {
         className: "BSC",
         city: "Lodhran",
     }
-
     response.json(student);
   })
 
   //http://localhost:3003/search-fruit?id=2
   app.get("/search-fruit", (request, response) => {
-    console.log(request.query.id);
+    console.log(request.query.index);
 
       const fruits = ["apple", "mango", "banana"];
-      const result = fruits[1];
+      const result = fruits[request.query.index];
 
-    response.json({
-      status: "OK",
-      result: result
-    });
+      const data = {
+        status: "OK",
+        result: result
+      }
+
+    response.json();
   })
 
   //http://localhost:3003/search/2
