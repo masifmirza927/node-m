@@ -38,15 +38,48 @@ app.get("/", (request, response) => {
 
   });
 
+  const students = [];
   // how to get request body data in express js?
   app.post("/create-user", (request, response) => {
     console.log(request.body);
-    const city = request.body.city;
+    students.push(request.body);
     response.json({
-      status: "OK"
-    })
+      students: students
+    });
 
   })
+
+  app.delete("/user-delete/:id", (request, response) => {
+      const index = request.params.id;
+    
+      students.splice(index, 1);
+      response.json({
+        status: true,
+        students: students
+      });
+  })
+
+  app.put("/user-update/:id", (request, response) => {
+    // get index numbe from params
+      const index = request.params.id;
+
+// select target object/student
+      let target = students[index];
+  
+      if(target) {
+        students[index] = request.body;
+        response.json({
+          status: "ok",
+          students: students
+        })
+      } else {
+        response.json({
+          status: "false",
+          message: "student not found"
+        })
+      }
+  })
+
 
 app.listen(port, () => {
     console.log(` app listening on port ${port}`)
