@@ -2,6 +2,9 @@ const express = require('express');
 const app = express()
 const port = 3003
 
+// middleware
+app.use(express.json());
+
 app.get("/", (request, response) => {
     const student = {
         name: "ali",
@@ -33,11 +36,15 @@ app.get("/", (request, response) => {
       status: "OK"
     });
 
-  })
+  });
 
   // how to get request body data in express js?
   app.post("/create-user", (request, response) => {
     console.log(request.body);
+    const city = request.body.city;
+    response.json({
+      status: "OK"
+    })
 
   })
 
