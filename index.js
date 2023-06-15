@@ -6,11 +6,13 @@ const StudentModel = require("./models/StudentModel");
 // middleware
 app.use(express.json());
 
-app.get("/",  (request, response) => {
+app.get("/",  async (request, response) => {
 
-     console.log("working...")
-      const student =  StudentModel.findById("6489626e4c7eefde2348ed28");
-      console.log(student)
+     console.log("line 11, top")
+      const student =  await StudentModel.findById("6489626e4c7eefde2348ed28");
+      
+      console.log(student);
+      console.log("line 15, bottom")
 
 })
 
