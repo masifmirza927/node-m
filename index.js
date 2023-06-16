@@ -6,26 +6,39 @@ const StudentModel = require("./models/StudentModel");
 // middleware
 app.use(express.json());
 
-app.get("/students",  async (request, response) => {
+app.get("/students", async (request, response) => {
 
-     console.log("line 11, top")
-      const students =  await StudentModel.find();
+  const students = await StudentModel.find();
 
-      response.json({
-        "status": true,
-        students: students
-      })
+  response.json({
+    "status": true,
+    students: students
+  })
 
 })
 
 app.post("/create-student", async (request, response) => {
-        const newStudent = request.body;
-        await StudentModel.create(newStudent);
+  const newStudent = request.body;
 
-        response.json({
-          "status": true,
-          "msg": 'successfully created'
-        })
+  try {
+    await StudentModel.create(newStudent);
+    return response.json({
+      "status": "OK"
+    });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      let errors = {};
+
+      Object.keys(error.errors).forEach((key) => {
+        errors[key] = error.errors[key].message;
+      });
+
+      return response.json({
+        "status": false,
+        errors: errors
+      })
+    }
+  }
 })
 
 
