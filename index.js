@@ -1,18 +1,41 @@
 const express = require('express');
 const app = express()
+const fs = require("fs");
 const mongoose = require('mongoose');
 const StudentModel = require("./models/StudentModel");
-const multer  = require('multer')
+const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
+
+
 
 // middleware
 app.use(express.json());
 
 app.post("/upload-image", upload.single('image'), async (request, response) => {
-    
-   response.json({
-    status: "OK"
-   })
+
+  let ext = request.file.mimetype.split("/")[1];
+
+  console.log(ext);
+
+
+  // 
+  if (ext == "jpeg" || ext == "gif" || ext == "png") {
+
+    if (ext == "plain") {
+      ext = "txt";
+    }
+    fs.rename(request.file.path, request.file.path + "." + ext, () => { console.log("done") });
+    return response.json({
+      status: "OK"
+    })
+
+  } else {
+    fs.unlink(request.file.path, () => { console.log("deleted")})
+    return response.json({
+      status: "not allowed"
+    })
+  }
+
 })
 
 
