@@ -6,13 +6,21 @@ const StudentSchema = new Schema( {
         type: String,
         required: [true, "Please provide student name"],
     },
-    city: {
+    email: {
         type: String,
-        required: [true, "Please send city"],
-        enum: {
-            values: ['Lodhran', 'Bahawalpur'],
-            message: '{VALUE} is not supported'
-          }
+        required: [true, "email is required"]
+    },
+    image: {
+        type: String,
+        required: [false, "image is required"]
+    },
+    address: {
+        type: String,
+        required: [true, "address is required"]
+    },
+    about: {
+        type: String,
+        required: [true, "please write about your self"]
     },
 });
 

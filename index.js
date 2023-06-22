@@ -5,32 +5,29 @@ const mongoose = require('mongoose');
 const StudentModel = require("./models/StudentModel");
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
-
-
+const cors = require("cors");
 
 // middleware
 app.use(express.json());
+app.use(cors());
 
 app.post("/upload-image", upload.single('image'), async (request, response) => {
+  // console.log(request.body.name);
+  // const data = {
+  //   name: request.body.name,
+  //   city: request.body.city
+  // }
 
-  let ext = request.file.mimetype.split("/")[1];
-
-  console.log(ext);
-
-
-  // 
-  if (ext == "jpeg" || ext == "gif" || ext == "png") {
-
-    if (ext == "plain") {
-      ext = "txt";
-    }
+  if (request.file.mimetype == "image/png" || request.file.mimetype == "image/jpg" || request.file.mimetype == "image/jpeg") {
+    let ext = request.file.mimetype.split("/")[1];
+    if (ext == "plain") { ext = "txt"; }
     fs.rename(request.file.path, request.file.path + "." + ext, () => { console.log("done") });
     return response.json({
       status: "OK"
     })
 
   } else {
-    fs.unlink(request.file.path, () => { console.log("deleted")})
+    fs.unlink(request.file.path, () => { console.log("deleted") })
     return response.json({
       status: "not allowed"
     })
@@ -39,24 +36,55 @@ app.post("/upload-image", upload.single('image'), async (request, response) => {
 })
 
 
-
-
 app.get("/students", async (request, response) => {
 
-  const students = await StudentModel.find();
+  try {
+      const students = await StudentModel.find();
+      return response.json({
+          status: true,
+          students: students
+      })
+  } catch (error) {
+      return response.json({
+          status: false,
+          msg: "Students not found"
+      })
+  }
+})
 
-  response.json({
-    "status": true,
-    students: students
-  })
+app.get("/student/:id", async (request, response) => {
+
+  try {
+    const students = await StudentModel.find();
+    return response.json({
+      status: true,
+      students: students
+    })
+  } catch (error) {
+    return response.json({
+      status: false,
+      message: "Something went wrong"
+    })
+  }
 
 })
 
-app.post("/create-student", async (request, response) => {
-  const newStudent = request.body;
+app.post("/create-student", upload.single('image'), async (request, response) => {
+
+
+  if (request.file.mimetype == "image/png" || request.file.mimetype == "image/jpg" || request.file.mimetype == "image/jpeg") {
+    let ext = request.file.mimetype.split("/")[1];
+    if (ext == "plain") { ext = "txt"; }
+    const NewImgName = request.file.path + "." + ext;
+    request.body.image = NewImgName;
+    fs.rename(request.file.path, NewImgName, () => { console.log("done") });
+
+  } else {
+    fs.unlink(request.file.path, () => { console.log("deleted") });
+  }
 
   try {
-    await StudentModel.create(newStudent);
+    await StudentModel.create(request.body);
     return response.json({
       "status": "OK"
     });
@@ -75,7 +103,6 @@ app.post("/create-student", async (request, response) => {
     }
   }
 })
-
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/studentsDbM').then(() => {
