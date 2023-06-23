@@ -12,7 +12,8 @@ const StudentSchema = new Schema( {
     },
     image: {
         type: String,
-        required: [false, "image is required"]
+        required: [false, "image is required"],
+        get: linkUrl
     },
     address: {
         type: String,
@@ -22,7 +23,11 @@ const StudentSchema = new Schema( {
         type: String,
         required: [true, "please write about your self"]
     },
-});
+}, {toJSON: {getters: true} });
+
+function linkUrl (image) {
+    return "http://localhost:3003/" + image;
+}
 
 const StudentModel = mongoose.model('Student', StudentSchema);
 module.exports = StudentModel
