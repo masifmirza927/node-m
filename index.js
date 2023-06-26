@@ -110,7 +110,50 @@ app.post("/create-student", upload.single('image'), async (request, response) =>
   }
 })
 
+app.put("/update-student/:id", upload.single('image'), async (request, response) => {
+
+    const id = request.params.id;
+
+  if (request.file.mimetype == "image/png" || request.file.mimetype == "image/jpg" || request.file.mimetype == "image/jpeg") {
+    let ext = request.file.mimetype.split("/")[1];
+    if (ext == "plain") { ext = "txt"; }
+    const NewImgName = request.file.path + "." + ext;
+    request.body.image = NewImgName;
+    fs.rename(request.file.path, NewImgName, () => { console.log("done") });
+
+  } else {
+    fs.unlink(request.file.path, () => { console.log("deleted") });
+  }
+
+  try {
+    await StudentModel.findByIdAndUpdate(id, request.body);
+    return response.json({
+      "status": true
+    });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      let errors = {};
+
+      Object.keys(error.errors).forEach((key) => {
+        errors[key] = error.errors[key].message;
+      });
+
+      return response.json({
+        "status": false,
+        errors: errors
+      })
+    }
+  }
+})
+
 app.delete("/student-delete/:id", async (request, response) => {
+
+  const protocol = request.protocol;
+    const host = request.hostname;
+    const url = request.originalUrl;
+    console.log(protocol, host, url)
+    return;
+
 
   const id = request.params.id;
   try {
@@ -126,6 +169,24 @@ app.delete("/student-delete/:id", async (request, response) => {
 
 })
 
+app.get("/search/:query", async (request, response) => {
+    const q = request.params.query;
+    
+    try {
+     let result =  await StudentModel.find({ name: {$regex: `${q}`, '$options' : 'i'}}).select({name:1, _id: 1})
+     
+      return response.json({
+        status: true,
+        students :result
+      })
+    } catch (error) {
+      return response.json({
+        status: false,
+      })
+    }
+
+
+})
 
 mongoose.connect('mongodb://127.0.0.1:27017/studentsDbM').then(() => {
   app.listen(3003, () => {
