@@ -45,16 +45,16 @@ app.post("/upload-image", upload.single('image'), async (request, response) => {
 app.get("/students", async (request, response) => {
 
   try {
-      const students = await StudentModel.find();
-      return response.json({
-          status: true,
-          students: students
-      })
+    const students = await StudentModel.find();
+    return response.json({
+      status: true,
+      students: students
+    })
   } catch (error) {
-      return response.json({
-          status: false,
-          msg: "Students not found"
-      })
+    return response.json({
+      status: false,
+      msg: "Students not found"
+    })
   }
 })
 
@@ -77,7 +77,16 @@ app.get("/student/:id", async (request, response) => {
 
 app.post("/create-student", upload.single('image'), async (request, response) => {
 
-
+  // image
+  if (!request.file) {
+    return response.json({
+      status: false,
+      errors: {
+        image: "please provide image"
+      }
+    })
+  }
+  
   if (request.file.mimetype == "image/png" || request.file.mimetype == "image/jpg" || request.file.mimetype == "image/jpeg") {
     let ext = request.file.mimetype.split("/")[1];
     if (ext == "plain") { ext = "txt"; }
@@ -112,7 +121,7 @@ app.post("/create-student", upload.single('image'), async (request, response) =>
 
 app.put("/update-student/:id", upload.single('image'), async (request, response) => {
 
-    const id = request.params.id;
+  const id = request.params.id;
 
   if (request.file.mimetype == "image/png" || request.file.mimetype == "image/jpg" || request.file.mimetype == "image/jpeg") {
     let ext = request.file.mimetype.split("/")[1];
@@ -149,41 +158,41 @@ app.put("/update-student/:id", upload.single('image'), async (request, response)
 app.delete("/student-delete/:id", async (request, response) => {
 
   const protocol = request.protocol;
-    const host = request.hostname;
-    const url = request.originalUrl;
-    console.log(protocol, host, url)
-    return;
+  const host = request.hostname;
+  const url = request.originalUrl;
+  console.log(protocol, host, url)
+  return;
 
 
   const id = request.params.id;
   try {
-      await StudentModel.findByIdAndDelete(id);
-      return response.json({
-        status: true
-      })
+    await StudentModel.findByIdAndDelete(id);
+    return response.json({
+      status: true
+    })
   } catch (error) {
     return response.json({
       status: false
     })
-  }  
+  }
 
 })
 
 app.get("/search/:query", async (request, response) => {
-    const q = request.params.query;
-    
-    try {
-     let result =  await StudentModel.find({ name: {$regex: `${q}`, '$options' : 'i'}}).select({name:1, _id: 1})
-     
-      return response.json({
-        status: true,
-        students :result
-      })
-    } catch (error) {
-      return response.json({
-        status: false,
-      })
-    }
+  const q = request.params.query;
+
+  try {
+    let result = await StudentModel.find({ name: { $regex: `${q}`, '$options': 'i' } }).select({ name: 1, _id: 1 })
+
+    return response.json({
+      status: true,
+      students: result
+    })
+  } catch (error) {
+    return response.json({
+      status: false,
+    })
+  }
 
 
 })

@@ -12,7 +12,7 @@ const StudentSchema = new Schema( {
     },
     image: {
         type: String,
-        required: [false, "image is required"],
+        required: [true, "image is required"],
         get: linkUrl
     },
     address: {
