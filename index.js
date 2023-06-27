@@ -7,13 +7,21 @@ const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const cors = require("cors");
 
+app.use(
+  cors({
+    origin: "*",
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+);
+
+
 const path = require('path');
 
 app.use("/uploads", express.static(path.join(path.resolve(), "uploads")));
 
 // middleware
 app.use(express.json());
-app.use(cors());
+// app.use(cors());
 
 // app.use(express.static(__dirname + 'public'));
 
@@ -86,7 +94,7 @@ app.post("/create-student", upload.single('image'), async (request, response) =>
       }
     })
   }
-  
+
   if (request.file.mimetype == "image/png" || request.file.mimetype == "image/jpg" || request.file.mimetype == "image/jpeg") {
     let ext = request.file.mimetype.split("/")[1];
     if (ext == "plain") { ext = "txt"; }
@@ -135,7 +143,7 @@ app.put("/update-student/:id", upload.single('image'), async (request, response)
   }
 
   try {
-    await StudentModel.findByIdAndUpdate(id, request.body);
+    await StudentModel.findByIdAndUpdate(id, request.body, {runValidators: true} );
     return response.json({
       "status": true
     });
